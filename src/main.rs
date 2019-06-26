@@ -11,6 +11,11 @@ struct HelloResponse {
     hello: String,
 }
 
+#[derive(Serialize)]
+struct HealthResponse {
+    status: String,
+}
+
 #[get("/hello")]
 fn hello(info: web::Query<HelloQuery>) -> impl Responder {
     web::Json(HelloResponse {
@@ -18,8 +23,18 @@ fn hello(info: web::Query<HelloQuery>) -> impl Responder {
     })
 }
 
+#[get("/health")]
+fn health() -> impl Responder {
+    web::Json(HealthResponse {
+        status: "OK".to_string(),
+    })
+}
+
 fn main() -> std::io::Result<()> {
-    HttpServer::new(|| App::new().service(hello))
+    HttpServer::new(||
+    App::new()
+    .service(hello)
+    .service(health))
         .bind("0.0.0.0:8080")?
         .run()
 }
